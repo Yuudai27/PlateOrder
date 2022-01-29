@@ -1,0 +1,1545 @@
+Private Sub Workbook_Open()
+    Worksheets("Bestellvorgang").ScrollArea = "$A$1:$P$10000"
+End Sub
+
+
+'Funktion zur Auswahl der zugehörigen Farbe entsprechend dem Typen und dem ausgewählten Kontrollkästchen
+Function OrderColour(typeName As String, kk() As Boolean) As String
+        Dim result As String
+        result = ""
+        'Zuordung der Farben zu den Kontrollkästchen
+        If kk(0) = True And typeName = "A1" Then
+            result = "ws/sw"
+        End If
+        If kk(1) = True And (typeName = "A2" Or typeName = "A3" Or typeName = "A4" Or typeName = "A5" Or typeName = "A6" Or typeName = "A7" Or typeName = "A8" Or typeName = "Typ1" Or typeName = "Typ2" Or typeName = "Typ3" Or typeName = "Typ4") Then
+            result = "ws/sw"
+        End If
+        If kk(2) = True And typeName = "ZD" Then
+            result = "ws/sw"
+        End If
+        If kk(3) = True And InStr(typeName, "R") <> 0 Then
+            result = "ws/sw"
+        End If
+        If kk(4) = True And typeName = "A1" Then
+            result = "ge/sw"
+        End If
+        If kk(5) = True And (typeName = "A2" Or typeName = "A3" Or typeName = "A4" Or typeName = "A5" Or typeName = "A6" Or typeName = "A7" Or typeName = "A8" Or typeName = "Typ1" Or typeName = "Typ2" Or typeName = "Typ3" Or typeName = "Typ4") Then
+            result = "ge/sw"
+        End If
+        If kk(6) = True And typeName = "ZD" Then
+            result = "ge/sw"
+        End If
+        If kk(7) = True And InStr(typeName, "R") <> 0 Then
+            result = "ge/sw"
+        End If
+        If kk(8) = True And typeName = "A1" Then
+            result = "rt/ws"
+        End If
+        If kk(9) = True And (typeName = "A2" Or typeName = "A3" Or typeName = "A4" Or typeName = "A5" Or typeName = "A6" Or typeName = "A7" Or typeName = "A8" Or typeName = "Typ1" Or typeName = "Typ2" Or typeName = "Typ3" Or typeName = "Typ4") Then
+            result = "rt/ws"
+        End If
+        If kk(10) = True And typeName = "ZD" Then
+            result = "rt/ws"
+        End If
+        If kk(11) = True And InStr(typeName, "R") <> 0 Then
+            result = "rt/ws"
+        End If
+        If kk(12) = True And typeName = "A1" Then
+            result = "Sonder"
+        End If
+        If kk(13) = True And (typeName = "A2" Or typeName = "A3" Or typeName = "A4" Or typeName = "A5" Or typeName = "A6" Or typeName = "A7" Or typeName = "A8" Or typeName = "Typ1" Or typeName = "Typ2" Or typeName = "Typ3" Or typeName = "Typ4") Then
+            result = "Sonder"
+        End If
+        If kk(14) = True And typeName = "ZD" Then
+            result = "Sonder"
+        End If
+        If kk(15) = True And InStr(typeName, "R") <> 0 Then
+            result = "Sonder"
+        End If
+        If InStr(typeName, "S") <> 0 Then
+            result = "ws/rt"
+        End If
+        OrderColour = result
+End Function
+
+
+
+
+Private Sub CommandButton1_Click()
+Dim pfad As String
+    'Suchen nach Datei zum Öffnen
+    With Application.FileDialog(msoFileDialogOpen)
+        .AllowMultiSelect = False
+        .Show
+        .InitialFileName = strPath
+        pfad = .SelectedItems(1)
+    End With
+    
+    'Initialisieren der Variablen
+    Dim wkb As Workbook
+    Dim twkb As Workbook
+    Set wkb = Workbooks.Open(pfad)
+    Set twkb = ThisWorkbook
+    
+    Dim countRow As Integer
+    Dim count As Integer
+    Dim subCount As Integer
+    Dim minCount As String
+    Dim xCount As Integer
+    Dim boolStock(16) As Boolean
+    Dim projectName As String
+    
+    count = 36
+    subCount = 3
+    xCount = 0
+    minCount = "0"
+    
+    While twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value <> ""
+        subCount = subCount + 1
+    Wend
+    
+    
+    
+
+    'Projektnamen und Datum aus Vorlage lesen
+    projectName = wkb.Worksheets("Bestellung").Range("C10").Value
+    projectName = Replace(projectName, "/", "-")
+    twkb.Worksheets("Bestellvorgang").Range("A2").Value = projectName
+    twkb.Worksheets("Bestellvorgang").Range("B2").Value = wkb.Worksheets("Bestellung").Range("H1").Value
+    
+    'Den Status der Kontrollkästchen prüfen und in einen Boolean- Array schreiben
+    boolStock(0) = wkb.Worksheets("Bestellung").OLEObjects("CheckBox6").Object.Value
+    boolStock(1) = wkb.Worksheets("Bestellung").OLEObjects("CheckBox7").Object.Value
+    boolStock(2) = wkb.Worksheets("Bestellung").OLEObjects("CheckBox8").Object.Value
+    boolStock(3) = wkb.Worksheets("Bestellung").OLEObjects("CheckBox9").Object.Value
+    boolStock(4) = wkb.Worksheets("Bestellung").OLEObjects("CheckBox11").Object.Value
+    boolStock(5) = wkb.Worksheets("Bestellung").OLEObjects("CheckBox12").Object.Value
+    boolStock(6) = wkb.Worksheets("Bestellung").OLEObjects("CheckBox13").Object.Value
+    boolStock(7) = wkb.Worksheets("Bestellung").OLEObjects("CheckBox14").Object.Value
+    boolStock(8) = wkb.Worksheets("Bestellung").OLEObjects("CheckBox16").Object.Value
+    boolStock(9) = wkb.Worksheets("Bestellung").OLEObjects("CheckBox17").Object.Value
+    boolStock(10) = wkb.Worksheets("Bestellung").OLEObjects("CheckBox18").Object.Value
+    boolStock(11) = wkb.Worksheets("Bestellung").OLEObjects("CheckBox19").Object.Value
+    boolStock(12) = wkb.Worksheets("Bestellung").OLEObjects("CheckBox21").Object.Value
+    boolStock(13) = wkb.Worksheets("Bestellung").OLEObjects("CheckBox22").Object.Value
+    boolStock(14) = wkb.Worksheets("Bestellung").OLEObjects("CheckBox23").Object.Value
+    boolStock(15) = wkb.Worksheets("Bestellung").OLEObjects("CheckBox24").Object.Value
+    
+    'While- Schleife zum Einlesen der Ergebnisse aus der Quelldatei in den Bestellprozess
+    While wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value <> ""
+    
+        If wkb.Worksheets("Bestellung").Range("D" + CStr(count)).Value = "" Then
+            'minCount = "1"
+        Else
+            minCount = wkb.Worksheets("Bestellung").Range("D" + CStr(count)).Value
+        End If
+    
+        'Prüfung ob es sich um einen Einzeltext handelt
+        If wkb.Worksheets("Bestellung").Range("E" + CStr(count)).Value = "" Then
+            If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "R") <> 0 Then
+                If wkb.Worksheets("Bestellung").OLEObjects("CheckBox26").Object.Value = True Then
+                    twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V1"
+                ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox27").Object.Value = True Then
+                    twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V2"
+                ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox28").Object.Value = True Then
+                    twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V3"
+                ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox29").Object.Value = True Then
+                    twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V4"
+                End If
+            End If
+            If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "S") <> 0 Then
+                If wkb.Worksheets("Bestellung").OLEObjects("CheckBox15").Object.Value = True Then
+                    twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "S-V1"
+                ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox20").Object.Value = True Then
+                    twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "S-V2"
+                End If
+            End If
+            If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "R") <> 0 Then
+                'twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("B25").Value
+                twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value
+            ElseIf InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "S") <> 0 Then
+                'twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("B26").Value
+                twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value
+            Else
+                twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value
+            End If
+            twkb.Worksheets("Bestellvorgang").Range("D" + CStr(subCount)).Value = OrderColour(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, boolStock())
+            If wkb.Worksheets("Bestellung").Range("D" + CStr(count)).Value = "" Then
+                twkb.Worksheets("Bestellvorgang").Range("E" + CStr(subCount)).Value = CStr(wkb.Worksheets("Bestellung").Range("C" + CStr(count)).Value)
+            Else
+                twkb.Worksheets("Bestellvorgang").Range("E" + CStr(subCount)).Value = CStr(wkb.Worksheets("Bestellung").Range("C" + CStr(count)).Value) + "/" + CStr(minCount)
+            End If
+            If wkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value <> "" Then
+                twkb.Worksheets("Bestellvorgang").Range("F" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value
+                If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "R") = 0 And InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "S") = 0 Then
+                    twkb.Worksheets("Bestellvorgang").Range("D" + CStr(subCount)).Value = OrderColour("ZD", boolStock())
+                End If
+            End If
+            subCount = subCount + 1
+        'Fall, dass mehrere Unternummern von einem Text vorhanden sind mit For-Schleife zum Schreiben aller Einzelwerte.
+        'Prüfung nach 0X berücksichtigen und hochzählen
+        Else
+            If minCount = "01" Or minCount = "02" Or minCount = "03" Or minCount = "04" Or minCount = "05" Or minCount = "06" Or minCount = "07" Or minCount = "08" Or minCount = "09" Then
+                If wkb.Worksheets("Bestellung").Range("E" + CStr(count)).Value < 10 Then
+                    For countRow = minCount To wkb.Worksheets("Bestellung").Range("E" + CStr(count)).Value
+                        If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "R") <> 0 Then
+                            If wkb.Worksheets("Bestellung").OLEObjects("CheckBox26").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V1"
+                            ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox27").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V2"
+                            ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox28").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V3"
+                            ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox29").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V4"
+                            End If
+                        End If
+                        If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "S") <> 0 Then
+                            If wkb.Worksheets("Bestellung").OLEObjects("CheckBox15").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "S-V1"
+                            ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox20").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "S-V2"
+                            End If
+                        End If
+                        If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "R") <> 0 Then
+                            'twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("B25").Value
+                            twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value
+                        ElseIf InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "S") <> 0 Then
+                            'twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("B26").Value
+                            twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value
+                        Else
+                            twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value
+                        End If
+                        twkb.Worksheets("Bestellvorgang").Range("D" + CStr(subCount)).Value = OrderColour(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, boolStock())
+                        twkb.Worksheets("Bestellvorgang").Range("E" + CStr(subCount)).Value = CStr(wkb.Worksheets("Bestellung").Range("C" + CStr(count)).Value) + "/0" + CStr(countRow)
+                        If wkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value <> "" Then
+                            twkb.Worksheets("Bestellvorgang").Range("F" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value
+                            If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "R") = 0 And InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "S") = 0 Then
+                                twkb.Worksheets("Bestellvorgang").Range("D" + CStr(subCount)).Value = OrderColour("ZD", boolStock())
+                            End If
+                        End If
+                        subCount = subCount + 1
+                    Next
+                Else
+                    For countRow = minCount To 9
+                        If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "R") <> 0 Then
+                            If wkb.Worksheets("Bestellung").OLEObjects("CheckBox26").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V1"
+                            ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox27").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V2"
+                            ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox28").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V3"
+                            ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox29").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V4"
+                            End If
+                        End If
+                        If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "S") <> 0 Then
+                            If wkb.Worksheets("Bestellung").OLEObjects("CheckBox15").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "S-V1"
+                            ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox20").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "S-V2"
+                            End If
+                        End If
+                        If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "R") <> 0 Then
+                            'twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("B25").Value
+                            twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value
+                        ElseIf InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "S") <> 0 Then
+                            'twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("B26").Value
+                            twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value
+                        Else
+                            twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value
+                        End If
+                        twkb.Worksheets("Bestellvorgang").Range("D" + CStr(subCount)).Value = OrderColour(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, boolStock())
+                        twkb.Worksheets("Bestellvorgang").Range("E" + CStr(subCount)).Value = CStr(wkb.Worksheets("Bestellung").Range("C" + CStr(count)).Value) + "/0" + CStr(countRow)
+                        If wkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value <> "" Then
+                            twkb.Worksheets("Bestellvorgang").Range("F" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value
+                            If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "R") = 0 And InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "S") = 0 Then
+                                twkb.Worksheets("Bestellvorgang").Range("D" + CStr(subCount)).Value = OrderColour("ZD", boolStock())
+                            End If
+                        End If
+                        subCount = subCount + 1
+                    Next
+                    For countRow = 10 To wkb.Worksheets("Bestellung").Range("E" + CStr(count)).Value
+                        If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "R") <> 0 Then
+                            If wkb.Worksheets("Bestellung").OLEObjects("CheckBox26").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V1"
+                            ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox27").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V2"
+                            ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox28").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V3"
+                            ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox29").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V4"
+                            End If
+                        End If
+                        If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "S") <> 0 Then
+                            If wkb.Worksheets("Bestellung").OLEObjects("CheckBox15").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "S-V1"
+                            ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox20").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "S-V2"
+                            End If
+                        End If
+                        If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "R") <> 0 Then
+                            'twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("B25").Value
+                            twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value
+                        ElseIf InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "S") <> 0 Then
+                            'twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("B26").Value
+                            twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value
+                        Else
+                            twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value
+                        End If
+                        twkb.Worksheets("Bestellvorgang").Range("D" + CStr(subCount)).Value = OrderColour(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, boolStock())
+                        twkb.Worksheets("Bestellvorgang").Range("E" + CStr(subCount)).Value = CStr(wkb.Worksheets("Bestellung").Range("C" + CStr(count)).Value) + "/" + CStr(countRow)
+                        If wkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value <> "" Then
+                            twkb.Worksheets("Bestellvorgang").Range("F" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value
+                            If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "R") = 0 And InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "S") = 0 Then
+                                twkb.Worksheets("Bestellvorgang").Range("D" + CStr(subCount)).Value = OrderColour("ZD", boolStock())
+                            End If
+                        End If
+                        subCount = subCount + 1
+                    Next
+                End If
+            Else
+                For countRow = minCount To wkb.Worksheets("Bestellung").Range("E" + CStr(count)).Value
+                    If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "R") <> 0 Then
+                            If wkb.Worksheets("Bestellung").OLEObjects("CheckBox26").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V1"
+                            ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox27").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V2"
+                            ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox28").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V3"
+                            ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox29").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "R-V4"
+                            End If
+                        End If
+                        If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "S") <> 0 Then
+                            If wkb.Worksheets("Bestellung").OLEObjects("CheckBox15").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "S-V1"
+                            ElseIf wkb.Worksheets("Bestellung").OLEObjects("CheckBox20").Object.Value = True Then
+                                twkb.Worksheets("Bestellvorgang").Range("B" + CStr(subCount)).Value = "S-V2"
+                            End If
+                        End If
+                    If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "R") <> 0 Then
+                            'twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("B25").Value
+                            twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value
+                        ElseIf InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "S") <> 0 Then
+                            'twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("B26").Value
+                            twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value
+                        Else
+                            twkb.Worksheets("Bestellvorgang").Range("C" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value
+                        End If
+                    twkb.Worksheets("Bestellvorgang").Range("D" + CStr(subCount)).Value = OrderColour(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, boolStock())
+                    twkb.Worksheets("Bestellvorgang").Range("E" + CStr(subCount)).Value = CStr(wkb.Worksheets("Bestellung").Range("C" + CStr(count)).Value) + "/" + CStr(countRow)
+                    If wkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value <> "" Then
+                        twkb.Worksheets("Bestellvorgang").Range("F" + CStr(subCount)).Value = wkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value
+                        If InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "R") = 0 And InStr(wkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value, "S") = 0 Then
+                            twkb.Worksheets("Bestellvorgang").Range("D" + CStr(subCount)).Value = OrderColour("ZD", boolStock())
+                        End If
+                    End If
+                    subCount = subCount + 1
+                Next
+            End If
+        End If
+    xCount = xCount + 1
+    If wkb.Worksheets("Bestellung").Range("F" + CStr(count)).Value = "" Or wkb.Worksheets("Bestellung").Range("F" + CStr(count)).Value = 1 Then
+        count = count + 1
+        xCount = 0
+    Else
+        If wkb.Worksheets("Bestellung").Range("F" + CStr(count)).Value = xCount Then
+            count = count + 1
+            xCount = 0
+        End If
+    End If
+    Wend
+    
+    'Schließen der Quelldatei
+    wkb.Close SaveChanges:=False
+End Sub
+
+Private Sub CommandButton2_Click()
+    'Initialisieren der Variablen
+    Dim Name As String
+    Dim twkb As Workbook
+    Set twkb = ThisWorkbook
+    
+    Dim countValue As Integer
+    Dim countWrite As Integer
+    Dim x, y, z As Integer
+    Dim nameX As Integer
+    Dim lineString As String
+    nameX = 0
+    Dim nameY As Integer
+    nameY = 0
+    Dim container(97, 4, 5000) As String
+    Dim nameContainerX()
+    nameContainerX = Array("A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "S30-V1", "S30-V2", "Typ1", "Typ2", "Typ3", "Typ4", "A270", "A280", "A290", "A2ZD", "A270ZD", "A280ZD", "A290ZD", "A3ZD", "A4ZD", "A5ZD", "A6ZD", "A7ZD", "A8ZD", "R50-V1", "R50-V2", "R50-V3", "R50-V4", "R55-V1", "R55-V2", "R55-V3", "R55-V4", "R60-V1", "R60-V2", "R60-V3", "R60-V4", "R65-V1", "R65-V2", "R65-V3", "R65-V4", "R70-V1", "R70-V2", "R70-V3", "R70-V4", "R75-V1", "R75-V2", "R75-V3", "R75-V4", "R80-V1", "R80-V2", "R80-V3", "R80-V4", "R85-V1", "R85-V2", "R85-V3", "R85-V4", "R90-V1", "R90-V2", "R90-V3", "R90-V4", "R95-V1", "R95-V2", "R95-V3", "R95-V4", "R100-V1", "R100-V2", "R100-V3", "R100-V4", "R105-V1", "R105-V2", "R105-V3", "R105-V4", "S40-V1", "S40-V2", "S50-V1", "S50-V2", "S60-V1", "S60-V2", "S70-V1", "S70-V2", "S75-V1", "S75-V2", "S80-V1", "S80-V2", "S85-V1", "S85-V2", "S90-V1", "S90-V2", "S95-V1", "S95-V2", "S100-V1", "S100-V2", "S105-V1", "S105-V2")
+    Dim nameContainerY()
+    nameContainerY = Array("weiss", "gelb", "rot", "sonder")
+    
+    'Den Array zur Aufnahme der Texte initialisieren
+    For x = 0 To 96
+        For y = 0 To 3
+            For z = 0 To 4999
+                container(x, y, z) = ""
+            Next
+        Next
+    Next
+    
+    'Lesen der Texte ab Zeile 3
+    countWrite = 3
+    
+    'While-Schleife zum Prüfen, welche Kombination aus Typen und Farben vorliegt
+    While twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value <> ""
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A1" Then
+            nameX = 0
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A2" Then
+            If Len(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value) <= 6 Then
+                If twkb.Worksheets("Bestellvorgang").Range("I4").Value = "A2" Then
+                    nameX = 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("I4").Value = "A270" Then
+                    nameX = 14
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("I4").Value = "A280" Then
+                    nameX = 15
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("I4").Value = "A290" Then
+                    nameX = 16
+                End If
+            ElseIf Len(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value) = 7 Then
+                If twkb.Worksheets("Bestellvorgang").Range("J4").Value = "A2" Then
+                    nameX = 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("J4").Value = "A270" Then
+                    nameX = 14
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("J4").Value = "A280" Then
+                    nameX = 15
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("J4").Value = "A290" Then
+                    nameX = 16
+                End If
+            ElseIf Len(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value) = 8 Then
+                If twkb.Worksheets("Bestellvorgang").Range("K4").Value = "A2" Then
+                    nameX = 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("K4").Value = "A270" Then
+                    nameX = 14
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("K4").Value = "A280" Then
+                    nameX = 15
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("K4").Value = "A290" Then
+                    nameX = 16
+                End If
+            ElseIf Len(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value) >= 9 Then
+                If twkb.Worksheets("Bestellvorgang").Range("L4").Value = "A2" Then
+                    nameX = 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("L4").Value = "A270" Then
+                    nameX = 14
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("L4").Value = "A280" Then
+                    nameX = 15
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("L4").Value = "A290" Then
+                    nameX = 16
+                End If
+            End If
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A3" Then
+            nameX = 2
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A4" Then
+            nameX = 3
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A5" Then
+            nameX = 4
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A6" Then
+            nameX = 5
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A7" Then
+            nameX = 6
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A8" Then
+           nameX = 7
+        End If
+        If InStr(twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value, "R") <> 0 Then
+            If twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V1" Then
+                If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R50" Then
+                    nameX = 27
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R55" Then
+                    nameX = 31
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R60" Then
+                    nameX = 35
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R65" Then
+                    nameX = 39
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R70" Then
+                    nameX = 43
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R75" Then
+                    nameX = 47
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R80" Then
+                    nameX = 51
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R85" Then
+                    nameX = 55
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R90" Then
+                    nameX = 59
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R95" Then
+                    nameX = 63
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R100" Then
+                    nameX = 67
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R105" Then
+                    nameX = 71
+                End If
+            ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V2" Then
+                If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R50" Then
+                    nameX = 28
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R55" Then
+                    nameX = 32
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R60" Then
+                    nameX = 36
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R65" Then
+                    nameX = 40
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R70" Then
+                    nameX = 44
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R75" Then
+                    nameX = 48
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R80" Then
+                    nameX = 52
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R85" Then
+                    nameX = 56
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R90" Then
+                    nameX = 60
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R95" Then
+                    nameX = 64
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R100" Then
+                    nameX = 68
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R105" Then
+                    nameX = 72
+                End If
+            ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V3" Then
+                If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R50" Then
+                    nameX = 29
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R55" Then
+                    nameX = 33
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R60" Then
+                    nameX = 37
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R65" Then
+                    nameX = 41
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R70" Then
+                    nameX = 45
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R75" Then
+                    nameX = 49
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R80" Then
+                    nameX = 53
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R85" Then
+                    nameX = 57
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R90" Then
+                    nameX = 61
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R95" Then
+                    nameX = 65
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R100" Then
+                    nameX = 69
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R105" Then
+                    nameX = 73
+                End If
+            ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V4" Then
+                If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R50" Then
+                    nameX = 30
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R55" Then
+                    nameX = 34
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R60" Then
+                    nameX = 38
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R65" Then
+                    nameX = 42
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R70" Then
+                    nameX = 46
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R75" Then
+                    nameX = 50
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R80" Then
+                    nameX = 54
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R85" Then
+                    nameX = 58
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R90" Then
+                    nameX = 62
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R95" Then
+                    nameX = 66
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R100" Then
+                    nameX = 70
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "R105" Then
+                    nameX = 74
+                End If
+            End If
+        End If
+        If InStr(twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value, "S") <> 0 Then
+            If twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "S-V1" Then
+                If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S30" Then
+                    nameX = 8
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S40" Then
+                    nameX = 75
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S50" Then
+                    nameX = 77
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S60" Then
+                    nameX = 79
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S70" Then
+                    nameX = 81
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S75" Then
+                    nameX = 83
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S80" Then
+                    nameX = 85
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S85" Then
+                    nameX = 87
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S90" Then
+                    nameX = 89
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S95" Then
+                    nameX = 91
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S100" Then
+                    nameX = 93
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S105" Then
+                    nameX = 95
+                End If
+            ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "S-V2" Then
+                If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S30" Then
+                    nameX = 9
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S40" Then
+                    nameX = 76
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S50" Then
+                    nameX = 78
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S60" Then
+                    nameX = 80
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S70" Then
+                    nameX = 82
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S75" Then
+                    nameX = 84
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S80" Then
+                    nameX = 86
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S85" Then
+                    nameX = 88
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S90" Then
+                    nameX = 90
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S95" Then
+                    nameX = 92
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S100" Then
+                    nameX = 94
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "S105" Then
+                    nameX = 96
+                End If
+            End If
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "Typ1" Then
+           nameX = 10
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "Typ2" Then
+           nameX = 11
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "Typ3" Then
+           nameX = 12
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "Typ4" Then
+           nameX = 13
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A270" Then
+           nameX = 14
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A280" Then
+           nameX = 15
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A290" Then
+           nameX = 16
+        End If
+        'ZD Abspeicherung separat oder gemeinsam
+        If twkb.Worksheets("Bestellvorgang").OLEObjects("CheckBox1").Object.Value = True Then
+            If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A2" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value <> "" Then
+                If Len(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value) + 3 <= 6 Then
+                If twkb.Worksheets("Bestellvorgang").Range("I7").Value = "A2" Then
+                    nameX = 17
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("I7").Value = "A270" Then
+                    nameX = 18
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("I7").Value = "A280" Then
+                    nameX = 19
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("I7").Value = "A290" Then
+                    nameX = 20
+                End If
+            ElseIf Len(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value) + 3 = 7 Then
+                If twkb.Worksheets("Bestellvorgang").Range("J7").Value = "A2" Then
+                    nameX = 17
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("J7").Value = "A270" Then
+                    nameX = 18
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("J7").Value = "A280" Then
+                    nameX = 19
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("J7").Value = "A290" Then
+                    nameX = 20
+                End If
+            ElseIf Len(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value) + 3 = 8 Then
+                If twkb.Worksheets("Bestellvorgang").Range("K7").Value = "A2" Then
+                    nameX = 17
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("K7").Value = "A270" Then
+                    nameX = 18
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("K7").Value = "A280" Then
+                    nameX = 19
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("K7").Value = "A290" Then
+                    nameX = 20
+                End If
+            ElseIf Len(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value) + 3 >= 9 Then
+                If twkb.Worksheets("Bestellvorgang").Range("L7").Value = "A2" Then
+                    nameX = 17
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("L7").Value = "A270" Then
+                    nameX = 18
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("L7").Value = "A280" Then
+                    nameX = 19
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("L7").Value = "A290" Then
+                    nameX = 20
+                End If
+            End If
+            End If
+            If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A270" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value <> "" Then
+                nameX = 18
+            End If
+            If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A280" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value <> "" Then
+                nameX = 19
+            End If
+            If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A290" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value <> "" Then
+                nameX = 20
+            End If
+            If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A3" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value <> "" Then
+                nameX = 21
+            End If
+            If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A4" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value <> "" Then
+                nameX = 22
+            End If
+            If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A5" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value <> "" Then
+                nameX = 23
+            End If
+            If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A6" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value <> "" Then
+                nameX = 24
+            End If
+            If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A7" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value <> "" Then
+                nameX = 25
+            End If
+            If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value = "A8" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value <> "" Then
+                nameX = 26
+            End If
+        End If
+        'Bestimmung der Farbe
+        If twkb.Worksheets("Bestellvorgang").Range("D" + CStr(countWrite)).Value = "ws/sw" Then
+            nameY = 0
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("D" + CStr(countWrite)).Value = "ge/sw" Then
+            nameY = 1
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("D" + CStr(countWrite)).Value = "rt/ws" Then
+            nameY = 2
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("D" + CStr(countWrite)).Value = "Sonder" Then
+            nameY = 3
+        End If
+        'Prüfen ob Array-Feld leer initialisiert ist oder ein Feld beschrieben ist. Fall es leer ist, wird der aktuelle Text geschrieben.
+        For x = 0 To 4999
+        If twkb.Worksheets("Bestellvorgang").OLEObjects("CheckBox2").Object.Value = True Then
+        If InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") <> 0 Then
+            If container(nameX, nameY, x) = "" Then
+                If InStr(twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value, "R") <> 0 Then
+                    If twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V1" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                        Exit For
+                    ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V2" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                        Exit For
+                    ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V3" Then
+                        container(nameX, nameY, x) = Mid(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, 1, InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") - 1)
+                        x = x + 1
+                        container(nameX, nameY, x) = Mid(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") + 1, Len(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value) - InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/"))
+                        Exit For
+                    ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V4" Then
+                        container(nameX, nameY, x) = Mid(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, 1, InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") - 1)
+                        x = x + 1
+                        container(nameX, nameY, x) = Mid(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") + 1, Len(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value) - InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/"))
+                        Exit For
+                    End If
+                End If
+                If InStr(twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value, "S") <> 0 Then
+                    If twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "S-V1" Then
+                        container(nameX, nameY, x) = Mid(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, 1, InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") - 1)
+                        x = x + 1
+                        container(nameX, nameY, x) = Mid(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") + 1, Len(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value) - InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/"))
+                        Exit For
+                    ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "S-V2" Then
+                        container(nameX, nameY, x) = Mid(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, 1, InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") - 1)
+                        x = x + 1
+                        container(nameX, nameY, x) = Mid(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") + 1, Len(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value) - InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/"))
+                        Exit For
+                    End If
+                End If
+                If twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value <> "" Then
+                    container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                    Exit For
+                Else
+                    container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                    Exit For
+                End If
+            End If
+        Else
+            If container(nameX, nameY, x) = "" Then
+                If InStr(twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value, "R") <> 0 Then
+                    If twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V1" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                        Exit For
+                    ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V2" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                        Exit For
+                    ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V3" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                        Exit For
+                    ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V4" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                        Exit For
+                    End If
+                End If
+                If InStr(twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value, "S") <> 0 Then
+                    If twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "S-V1" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                        Exit For
+                    ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "S-V2" Then
+                       container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                        Exit For
+                    End If
+                End If
+                If twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value <> "" Then
+                    container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                    Exit For
+                Else
+                    container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                    Exit For
+                End If
+            End If
+        End If
+        Else
+        If InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") <> 0 Then
+            If container(nameX, nameY, x) = "" Then
+                If InStr(twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value, "R") <> 0 Then
+                    If twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V1" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value & " " & twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                        Exit For
+                    ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V2" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value
+                        x = x + 1
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                        Exit For
+                    ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V3" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value & " " & Mid(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, 1, InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") - 1)
+                        x = x + 1
+                        container(nameX, nameY, x) = Mid(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") + 1, Len(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value) - InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/"))
+                        Exit For
+                    ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V4" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value
+                        x = x + 1
+                        container(nameX, nameY, x) = Mid(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, 1, InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") - 1)
+                        x = x + 1
+                        container(nameX, nameY, x) = Mid(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") + 1, Len(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value) - InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/"))
+                        Exit For
+                    End If
+                End If
+                If InStr(twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value, "S") <> 0 Then
+                    If twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "S-V1" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value
+                        x = x + 1
+                        container(nameX, nameY, x) = Mid(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, 1, InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") - 1)
+                        x = x + 1
+                        container(nameX, nameY, x) = Mid(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") + 1, Len(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value) - InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/"))
+                        Exit For
+                    ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "S-V2" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value
+                        x = x + 1
+                        container(nameX, nameY, x) = Mid(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, 1, InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") - 1)
+                        x = x + 1
+                        container(nameX, nameY, x) = Mid(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/") + 1, Len(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value) - InStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value, "/"))
+                        Exit For
+                    End If
+                End If
+                If twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value <> "" Then
+                    container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value & " " & twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                    Exit For
+                Else
+                    container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                    Exit For
+                End If
+            End If
+        Else
+            If container(nameX, nameY, x) = "" Then
+                If InStr(twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value, "R") <> 0 Then
+                    If twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V1" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value & " " & twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                        Exit For
+                    ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V2" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value
+                        x = x + 1
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                        Exit For
+                    ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V3" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value & " " & twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                        Exit For
+                    ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "R-V4" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value
+                        x = x + 1
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                        Exit For
+                    End If
+                End If
+                If InStr(twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countWrite)).Value, "S") <> 0 Then
+                    If twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "S-V1" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value
+                        x = x + 1
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                        Exit For
+                    ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countWrite)).Value = "S-V2" Then
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value
+                        x = x + 1
+                        container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                        Exit For
+                    End If
+                End If
+                If twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value <> "" Then
+                    container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countWrite)).Value & " " & twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                    Exit For
+                Else
+                    container(nameX, nameY, x) = twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countWrite)).Value
+                    Exit For
+                End If
+            End If
+        End If
+        End If
+        Next
+        'Sprung zur nächsten Zeile
+        countWrite = countWrite + 1
+    Wend
+    
+    'For-Schleife zum Beschreiben eines langen Strings für eine Zeile in der CSV- Datei
+    Dim lineLimit As Integer
+    Dim lineLimitString As String
+    Dim setLimit As Integer
+    Dim printedLineLimit As Integer
+    
+    For x = 0 To 96
+        For y = 0 To 3
+            countValue = 0
+            printedLineLimit = 0
+            lineLimit = 1
+            For z = 0 To 4999
+                'Zur nächsten Kombination springen, sobald das Array-Feld unbeschrieben ist
+                If container(x, y, z) = "" Then
+                    Exit For
+                End If
+                'Zeilen- String erweitern
+                lineLimitString = lineLimitString & CStr(lineLimit) & ";"
+                lineLimit = lineLimit + 1
+                lineString = lineString & container(x, y, z) & ";"
+                'Prüfen ob bereits 150 Datensätze hinzugefügt wurden und dann in die Datei schreiben, den Zähler und den String reseten,
+                If twkb.Worksheets("Bestellvorgang").Range("N" + CStr(9 + x)).Value <> "" Then
+                    setLimit = twkb.Worksheets("Bestellvorgang").Range("N" + CStr(9 + x)).Value
+                Else
+                    setLimit = twkb.Worksheets("Bestellvorgang").Range("M" + CStr(9 + x)).Value
+                End If
+                countValue = countValue + 1
+                If countValue = setLimit Then
+                    'Öffnen der Datei mit generierten Namen aus der Kombination Projekt_Typ_Farbe.csv
+                    Name = "C:\Testpfad\" & twkb.Worksheets("Bestellvorgang").Range("A2").Value & "_" & nameContainerX(x) & "_" & nameContainerY(y) & ".csv"
+                    Open Name For Append As #1
+                    If printedLineLimit = 0 Then
+                        Print #1, lineLimitString
+                        printedLineLimit = 1
+                    End If
+                    Print #1, lineString
+                    Close #1
+                    lineString = ""
+                    lineLimitString = ""
+                    countValue = 0
+                    lineLimit = 1
+                End If
+            Next
+            'Schreiben in Datei falls der Array bereits vor 150 Ergebnissen voll ist.
+            If countValue > 0 Then
+                Name = "C:\Testpfad\" & twkb.Worksheets("Bestellvorgang").Range("A2").Value & "_" & nameContainerX(x) & "_" & nameContainerY(y) & ".csv"
+                        Open Name For Append As #1
+                        If printedLineLimit = 0 Then
+                            Print #1, lineLimitString
+                            printedLineLimit = 1
+                        End If
+                        Print #1, lineString
+                        Close #1
+                lineString = ""
+                lineLimitString = ""
+            End If
+        Next
+    Next
+    
+End Sub
+
+Private Sub CommandButton3_Click()
+'Schaltflaeche zum Bereinigen des Blattes'
+    Worksheets("Bestellvorgang").Range("A2:F10000").ClearContents
+End Sub
+
+Private Sub CommandButton4_Click()
+'Berechnungen der Anzahl einzelner Größen
+    Dim twkb As Workbook
+    Set twkb = ThisWorkbook
+
+    Dim a1Count As Integer
+    a1Count = 0
+    Dim a2Count As Integer
+    a2Count = 0
+    Dim a270Count As Integer
+    a270Count = 0
+    Dim a280Count As Integer
+    a280Count = 0
+    Dim a290Count As Integer
+    a290Count = 0
+    Dim a270Count2 As Integer
+    a270Count2 = 0
+    Dim a280Count2 As Integer
+    a280Count2 = 0
+    Dim a290Count2 As Integer
+    a290Count2 = 0
+    Dim a3Count As Integer
+    a3Count = 0
+    Dim a4Count As Integer
+    a4Count = 0
+    Dim a5Count As Integer
+    a5Count = 0
+    Dim a6Count As Integer
+    a6Count = 0
+    Dim a7Count As Integer
+    a7Count = 0
+    Dim a8Count As Integer
+    a8Count = 0
+    Dim s30Count1 As Integer
+    s30Count1 = 0
+    Dim s30Count2 As Integer
+    s30Count2 = 0
+    Dim t1Count As Integer
+    t1Count = 0
+    Dim t2Count As Integer
+    t2Count = 0
+    Dim t3Count As Integer
+    t3Count = 0
+    Dim t4Count As Integer
+    t4Count = 0
+    Dim a2ZDCount As Integer
+    a2ZDCount = 0
+    Dim a270ZDCount As Integer
+    a270ZDCount = 0
+    Dim a280ZDCount As Integer
+    a280ZDCount = 0
+    Dim a290ZDCount As Integer
+    a290ZDCount = 0
+    Dim a270ZDCount2 As Integer
+    a270ZDCount2 = 0
+    Dim a280ZDCount2 As Integer
+    a280ZDCount2 = 0
+    Dim a290ZDCount2 As Integer
+    a290ZDCount2 = 0
+    Dim a3ZDCount As Integer
+    a3ZDCount = 0
+    Dim a4ZDCount As Integer
+    a4ZDCount = 0
+    Dim a5ZDCount As Integer
+    a5ZDCount = 0
+    Dim a6ZDCount As Integer
+    a6ZDCount = 0
+    Dim a7ZDCount As Integer
+    a7ZDCount = 0
+    Dim a8ZDCount As Integer
+    a8ZDCount = 0
+    Dim r50Count1 As Integer
+    r50Count1 = 0
+    Dim r50Count2 As Integer
+    r50Count2 = 0
+    Dim r50Count3 As Integer
+    r50Count3 = 0
+    Dim r50Count4 As Integer
+    r50Count4 = 0
+    Dim r55Count1 As Integer
+    r55Cou5t1 = 0
+    Dim r55Count2 As Integer
+    r55Count2 = 0
+    Dim r55Count3 As Integer
+    r55Count3 = 0
+    Dim r55Count4 As Integer
+    r55Count4 = 0
+    Dim r60Count1 As Integer
+    r60Count1 = 0
+    Dim r60Count2 As Integer
+    r60Count2 = 0
+    Dim r60Count3 As Integer
+    r60Count3 = 0
+    Dim r60Count4 As Integer
+    r60Count4 = 0
+    Dim r65Count1 As Integer
+    r65Count1 = 0
+    Dim r65Count2 As Integer
+    r65Count2 = 0
+    Dim r65Count3 As Integer
+    r65Count3 = 0
+    Dim r65Count4 As Integer
+    r65Count4 = 0
+    Dim r70Count1 As Integer
+    r70Count1 = 0
+    Dim r70Count2 As Integer
+    r70Count2 = 0
+    Dim r70Count3 As Integer
+    r70Count3 = 0
+    Dim r70Count4 As Integer
+    r70Count4 = 0
+    Dim r75Count1 As Integer
+    r75Count1 = 0
+    Dim r75Count2 As Integer
+    r75Count2 = 0
+    Dim r75Count3 As Integer
+    r75Count3 = 0
+    Dim r75Count4 As Integer
+    r75Count4 = 0
+    Dim r80Count1 As Integer
+    r80Count1 = 0
+    Dim r80Count2 As Integer
+    r80Count2 = 0
+    Dim r80Count3 As Integer
+    r80Count3 = 0
+    Dim r80Count4 As Integer
+    r80Count4 = 0
+    Dim r85Count1 As Integer
+    r85Count1 = 0
+    Dim r85Count2 As Integer
+    r85Count2 = 0
+    Dim r85Count3 As Integer
+    r85Count3 = 0
+    Dim r85Count4 As Integer
+    r85Count4 = 0
+    Dim r90Count1 As Integer
+    r90Count1 = 0
+    Dim r90Count2 As Integer
+    r90Count2 = 0
+    Dim r90Count3 As Integer
+    r90Count3 = 0
+    Dim r90Count4 As Integer
+    r90Count4 = 0
+    Dim r95Count1 As Integer
+    r95Count1 = 0
+    Dim r95Count2 As Integer
+    r95Count2 = 0
+    Dim r95Count3 As Integer
+    r95Count3 = 0
+    Dim r95Count4 As Integer
+    r95Count4 = 0
+    Dim r100Count1 As Integer
+    r100Count1 = 0
+    Dim r100Count2 As Integer
+    r100Count2 = 0
+    Dim r100Count3 As Integer
+    r100Count3 = 0
+    Dim r100Count4 As Integer
+    r100Count4 = 0
+    Dim r105Count1 As Integer
+    r105Count1 = 0
+    Dim r105Count2 As Integer
+    r105Count2 = 0
+    Dim r105Count3 As Integer
+    r105Count3 = 0
+    Dim r105Count4 As Integer
+    r105Count4 = 0
+    Dim s40Count1 As Integer
+    s40Count1 = 0
+    Dim s40Count2 As Integer
+    s40Count2 = 0
+    Dim s50Count1 As Integer
+    s50Count1 = 0
+    Dim s50Count2 As Integer
+    s50Count2 = 0
+    Dim s60Count1 As Integer
+    s60Count1 = 0
+    Dim s60Count2 As Integer
+    s60Count2 = 0
+    Dim s70Count1 As Integer
+    s70Count1 = 0
+    Dim s70Count2 As Integer
+    s70Count2 = 0
+    Dim s75Count1 As Integer
+    s75Count1 = 0
+    Dim s75Count2 As Integer
+    s75Count2 = 0
+    Dim s80Count1 As Integer
+    s80Count1 = 0
+    Dim s80Count2 As Integer
+    s80Count2 = 0
+    Dim s85Count1 As Integer
+    s85Count1 = 0
+    Dim s85Count2 As Integer
+    s85Count2 = 0
+    Dim s90Count1 As Integer
+    s90Count1 = 0
+    Dim s90Count2 As Integer
+    s90Count2 = 0
+    Dim s95Count1 As Integer
+    s95Count1 = 0
+    Dim s95Count2 As Integer
+    s95Count2 = 0
+    Dim s100Count1 As Integer
+    s100Count1 = 0
+    Dim s100Count2 As Integer
+    s100Count2 = 0
+    Dim s105Count1 As Integer
+    s105Count1 = 0
+    Dim s105Count2 As Integer
+    s105Count2 = 0
+    
+    Dim countLine As Integer
+    countLine = 3
+    
+    While twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value <> ""
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A1" Then
+            a1Count = a1Count + 1
+        End If
+        
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A2" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value <> "" Then
+            'Schildgrößen A2 nach Länge ordnen
+            If Len(CStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countLine)).Value)) + 3 <= 6 Then
+                a2ZDCount = a2ZDCount + 1
+            End If
+            If Len(CStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countLine)).Value)) + 3 = 7 Then
+                a270ZDCount = a270ZDCount + 1
+            End If
+            If Len(CStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countLine)).Value)) + 3 = 8 Then
+                a280ZDCount = a280ZDCount + 1
+            End If
+            If Len(CStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countLine)).Value)) + 3 >= 9 Then
+                a290ZDCount = a290ZDCount + 1
+            End If
+        ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A2" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value = "" Then
+            If Len(CStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countLine)).Value)) <= 6 Then
+                a2Count = a2Count + 1
+            End If
+            If Len(CStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countLine)).Value)) = 7 Then
+                a270Count = a270Count + 1
+            End If
+            If Len(CStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countLine)).Value)) = 8 Then
+                a280Count = a280Count + 1
+            End If
+            If Len(CStr(twkb.Worksheets("Bestellvorgang").Range("E" + CStr(countLine)).Value)) >= 9 Then
+                a290Count = a290Count + 1
+            End If
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A3" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value <> "" Then
+            a3ZDCount = a3ZDCount + 1
+        ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A3" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value = "" Then
+            a3Count = a3Count + 1
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A4" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value <> "" Then
+            a4ZDCount = a4ZDCount + 1
+        ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A4" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value = "" Then
+            a4Count = a4Count + 1
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A5" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value <> "" Then
+            a5ZDCount = a5ZDCount + 1
+        ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A5" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value = "" Then
+            a5Count = a5Count + 1
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A6" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value <> "" Then
+            a6ZDCount = a6ZDCount + 1
+        ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A6" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value = "" Then
+            a6Count = a6Count + 1
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A7" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value <> "" Then
+            a7ZDCount = a7ZDCount + 1
+        ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A7" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value = "" Then
+            a7Count = a7Count + 1
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A8" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value <> "" Then
+            a8ZDCount = a8ZDCount + 1
+        ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A8" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value = "" Then
+            a8Count = a8Count + 1
+        End If
+        If InStr(twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value, "R") <> 0 Then
+            If twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countLine)).Value = "R-V1" Then
+                If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R50" Then
+                    r50Count1 = r50Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R55" Then
+                    r55Count1 = r55Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R60" Then
+                    r60Count1 = r60Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R65" Then
+                    r65Count1 = r65Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R70" Then
+                    r70Count1 = r70Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R75" Then
+                    r75Count1 = r75Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R80" Then
+                    r80Count1 = r80Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R85" Then
+                    r85Count1 = r85Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R90" Then
+                    r90Count1 = r90Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R95" Then
+                    r95Count1 = r95Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R100" Then
+                    r100Count1 = r100Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R105" Then
+                    r105Count1 = r105Count1 + 1
+                End If
+            ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countLine)).Value = "R-V2" Then
+                If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R50" Then
+                    r50Count2 = r50Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R55" Then
+                    r55Count2 = r55Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R60" Then
+                    r60Count2 = r60Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R65" Then
+                    r65Count2 = r65Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R70" Then
+                    r70Count2 = r70Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R75" Then
+                    r75Count2 = r75Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R80" Then
+                    r80Count2 = r80Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R85" Then
+                    r85Count2 = r85Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R90" Then
+                    r90Count2 = r90Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R95" Then
+                    r95Count2 = r95Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R100" Then
+                    r100Count = r100Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R105" Then
+                    r105Count2 = r105Count2 + 1
+                End If
+            ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countLine)).Value = "R-V3" Then
+                If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R50" Then
+                    r50Count3 = r50Count3 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R55" Then
+                    r55Count3 = r55Count3 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R60" Then
+                    r60Count3 = r60Count3 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R65" Then
+                    r65Count3 = r65Count3 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R70" Then
+                    r70Count3 = r70Count3 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R75" Then
+                    r75Count3 = r75Count3 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R80" Then
+                    r80Count3 = r80Count3 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R85" Then
+                    r85Count3 = r85Count3 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R90" Then
+                    r90Count3 = r90Count3 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R95" Then
+                    r95Count3 = r95Count3 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R100" Then
+                    r100Count3 = r100Count3 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R105" Then
+                    r105Count3 = r105Count3 + 1
+                End If
+            ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countLine)).Value = "R-V4" Then
+                If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R50" Then
+                    r50Count4 = r50Count4 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R55" Then
+                    r55Count4 = r55Count4 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R60" Then
+                    r60Count4 = r60Count4 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R65" Then
+                    r65Count4 = r65Count4 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R70" Then
+                    r70Count4 = r70Count4 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R75" Then
+                    r75Count4 = r75Count4 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R80" Then
+                    r80Count4 = r80Count4 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R85" Then
+                    r85Count4 = r85Count4 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R90" Then
+                    r90Count4 = r90Count4 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R95" Then
+                    r95Count4 = r95Count4 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R100" Then
+                    r100Count4 = r100Count4 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "R105" Then
+                    r105Count4 = r105Count4 + 1
+                End If
+            End If
+        End If
+        If InStr(twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value, "S") <> 0 Then
+            If twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countLine)).Value = "S-V1" Then
+                If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S30" Then
+                    s30Count1 = s30Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S40" Then
+                    s40Count1 = s40Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S50" Then
+                    s50Count1 = s50Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S60" Then
+                    s60Count1 = s60Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S70" Then
+                    s70Count1 = s70Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S75" Then
+                    s75Count1 = s75Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S80" Then
+                    s80Count1 = s80Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S85" Then
+                    s85Count1 = s85Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S90" Then
+                    s90Count1 = s90Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S95" Then
+                    s95Count1 = s95Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S100" Then
+                    s100Count1 = s100Count1 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S105" Then
+                    s105Count1 = s105Count1 + 1
+                End If
+            ElseIf twkb.Worksheets("Bestellvorgang").Range("B" + CStr(countLine)).Value = "S-V2" Then
+                If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S30" Then
+                    s30Count2 = s30Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S40" Then
+                    s40Count2 = s40Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S50" Then
+                    s50Count2 = s50Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S60" Then
+                    s60Count2 = s60Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S70" Then
+                    s70Count2 = s70Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S75" Then
+                    s75Count2 = s75Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S80" Then
+                    s80Count2 = s80Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S85" Then
+                    s85Count2 = s85Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S90" Then
+                    s90Count2 = s90Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S95" Then
+                    s95Count2 = s95Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S100" Then
+                    s100Count2 = s100Count2 + 1
+                ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "S105" Then
+                    s105Count2 = s105Count2 + 1
+                End If
+            End If
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "Typ1" Then
+            t1Count = t1Count + 1
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "Typ2" Then
+            t2Count = t2Count + 1
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "Typ3" Then
+            t3Count = t3Count + 1
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "Typ4" Then
+            t4Count = t4Count + 1
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A270" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value <> "" Then
+            a270ZDCount2 = a270ZDCount2 + 1
+        ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A270" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value = "" Then
+            a270Count2 = a270Count2 + 1
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A280" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value <> "" Then
+            a280ZDCount2 = a280ZDCount2 + 1
+        ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A280" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value = "" Then
+            a280Count2 = a280Count2 + 1
+        End If
+        If twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A290" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value <> "" Then
+            a290Count2 = a290Count2 + 1
+        ElseIf twkb.Worksheets("Bestellvorgang").Range("C" + CStr(countLine)).Value = "A290" And twkb.Worksheets("Bestellvorgang").Range("F" + CStr(countLine)).Value = "" Then
+            a290ZDCount2 = a290ZDCount2 + 1
+        End If
+        countLine = countLine + 1
+    Wend
+    
+    twkb.Worksheets("Bestellvorgang").Range("H9") = a1Count
+    twkb.Worksheets("Bestellvorgang").Range("I10") = a2Count
+    twkb.Worksheets("Bestellvorgang").Range("J10") = a270Count
+    twkb.Worksheets("Bestellvorgang").Range("K10") = a280Count
+    twkb.Worksheets("Bestellvorgang").Range("L10") = a290Count
+    twkb.Worksheets("Bestellvorgang").Range("H11") = a3Count
+    twkb.Worksheets("Bestellvorgang").Range("H12") = a4Count
+    twkb.Worksheets("Bestellvorgang").Range("H13") = a5Count
+    twkb.Worksheets("Bestellvorgang").Range("H14") = a6Count
+    twkb.Worksheets("Bestellvorgang").Range("H15") = a7Count
+    twkb.Worksheets("Bestellvorgang").Range("H16") = a8Count
+    twkb.Worksheets("Bestellvorgang").Range("H17") = s30Count1
+    twkb.Worksheets("Bestellvorgang").Range("H18") = s30Count2
+    twkb.Worksheets("Bestellvorgang").Range("H19") = t1Count
+    twkb.Worksheets("Bestellvorgang").Range("H20") = t2Count
+    twkb.Worksheets("Bestellvorgang").Range("H21") = t3Count
+    twkb.Worksheets("Bestellvorgang").Range("H22") = t4Count
+    twkb.Worksheets("Bestellvorgang").Range("H23") = a270Count2
+    twkb.Worksheets("Bestellvorgang").Range("H24") = a280Count2
+    twkb.Worksheets("Bestellvorgang").Range("H25") = a290Count2
+    twkb.Worksheets("Bestellvorgang").Range("I26") = a2ZDCount
+    twkb.Worksheets("Bestellvorgang").Range("J26") = a270ZDCount
+    twkb.Worksheets("Bestellvorgang").Range("K26") = a280ZDCount
+    twkb.Worksheets("Bestellvorgang").Range("L26") = a290ZDCount
+    twkb.Worksheets("Bestellvorgang").Range("H27") = a270ZDCount2
+    twkb.Worksheets("Bestellvorgang").Range("H28") = a280ZDCount2
+    twkb.Worksheets("Bestellvorgang").Range("H29") = a290ZDCount2
+    twkb.Worksheets("Bestellvorgang").Range("H30") = a3ZDCount
+    twkb.Worksheets("Bestellvorgang").Range("H31") = a4ZDCount
+    twkb.Worksheets("Bestellvorgang").Range("H32") = a5ZDCount
+    twkb.Worksheets("Bestellvorgang").Range("H33") = a6ZDCount
+    twkb.Worksheets("Bestellvorgang").Range("H34") = a7ZDCount
+    twkb.Worksheets("Bestellvorgang").Range("H35") = a8ZDCount
+    twkb.Worksheets("Bestellvorgang").Range("H36") = r50Count1
+    twkb.Worksheets("Bestellvorgang").Range("H37") = r50Count2
+    twkb.Worksheets("Bestellvorgang").Range("H38") = r50Count3
+    twkb.Worksheets("Bestellvorgang").Range("H39") = r50Count4
+    twkb.Worksheets("Bestellvorgang").Range("H40") = r55Count1
+    twkb.Worksheets("Bestellvorgang").Range("H41") = r55Count2
+    twkb.Worksheets("Bestellvorgang").Range("H42") = r55Count3
+    twkb.Worksheets("Bestellvorgang").Range("H43") = r55Count4
+    twkb.Worksheets("Bestellvorgang").Range("H44") = r60Count1
+    twkb.Worksheets("Bestellvorgang").Range("H45") = r60Count2
+    twkb.Worksheets("Bestellvorgang").Range("H46") = r60Count3
+    twkb.Worksheets("Bestellvorgang").Range("H47") = r60Count4
+    twkb.Worksheets("Bestellvorgang").Range("H48") = r65Count1
+    twkb.Worksheets("Bestellvorgang").Range("H49") = r65Count2
+    twkb.Worksheets("Bestellvorgang").Range("H50") = r65Count3
+    twkb.Worksheets("Bestellvorgang").Range("H51") = r65Count4
+    twkb.Worksheets("Bestellvorgang").Range("H52") = r70Count1
+    twkb.Worksheets("Bestellvorgang").Range("H53") = r70Count2
+    twkb.Worksheets("Bestellvorgang").Range("H54") = r70Count3
+    twkb.Worksheets("Bestellvorgang").Range("H55") = r70Count4
+    twkb.Worksheets("Bestellvorgang").Range("H56") = r75Count1
+    twkb.Worksheets("Bestellvorgang").Range("H57") = r75Count2
+    twkb.Worksheets("Bestellvorgang").Range("H58") = r75Count3
+    twkb.Worksheets("Bestellvorgang").Range("H59") = r75Count4
+    twkb.Worksheets("Bestellvorgang").Range("H60") = r80Count1
+    twkb.Worksheets("Bestellvorgang").Range("H61") = r80Count2
+    twkb.Worksheets("Bestellvorgang").Range("H62") = r80Count3
+    twkb.Worksheets("Bestellvorgang").Range("H63") = r80Count4
+    twkb.Worksheets("Bestellvorgang").Range("H64") = r85Count1
+    twkb.Worksheets("Bestellvorgang").Range("H65") = r85Count2
+    twkb.Worksheets("Bestellvorgang").Range("H66") = r85Count3
+    twkb.Worksheets("Bestellvorgang").Range("H67") = r85Count4
+    twkb.Worksheets("Bestellvorgang").Range("H68") = r90Count1
+    twkb.Worksheets("Bestellvorgang").Range("H69") = r90Count2
+    twkb.Worksheets("Bestellvorgang").Range("H70") = r90Count3
+    twkb.Worksheets("Bestellvorgang").Range("H71") = r90Count4
+    twkb.Worksheets("Bestellvorgang").Range("H72") = r95Count1
+    twkb.Worksheets("Bestellvorgang").Range("H73") = r95Count2
+    twkb.Worksheets("Bestellvorgang").Range("H74") = r95Count3
+    twkb.Worksheets("Bestellvorgang").Range("H75") = r95Count4
+    twkb.Worksheets("Bestellvorgang").Range("H76") = r100Count1
+    twkb.Worksheets("Bestellvorgang").Range("H77") = r100Count2
+    twkb.Worksheets("Bestellvorgang").Range("H78") = r100Count3
+    twkb.Worksheets("Bestellvorgang").Range("H79") = r100Count4
+    twkb.Worksheets("Bestellvorgang").Range("H80") = r105Count1
+    twkb.Worksheets("Bestellvorgang").Range("H81") = r105Count2
+    twkb.Worksheets("Bestellvorgang").Range("H82") = r105Count3
+    twkb.Worksheets("Bestellvorgang").Range("H83") = r105Count4
+    twkb.Worksheets("Bestellvorgang").Range("H84") = s40Count1
+    twkb.Worksheets("Bestellvorgang").Range("H85") = s40Count2
+    twkb.Worksheets("Bestellvorgang").Range("H86") = s50Count1
+    twkb.Worksheets("Bestellvorgang").Range("H87") = s50Count2
+    twkb.Worksheets("Bestellvorgang").Range("H88") = s60Count1
+    twkb.Worksheets("Bestellvorgang").Range("H89") = s60Count2
+    twkb.Worksheets("Bestellvorgang").Range("H90") = s70Count1
+    twkb.Worksheets("Bestellvorgang").Range("H91") = s70Count2
+    twkb.Worksheets("Bestellvorgang").Range("H92") = s75Count1
+    twkb.Worksheets("Bestellvorgang").Range("H93") = s75Count2
+    twkb.Worksheets("Bestellvorgang").Range("H94") = s80Count1
+    twkb.Worksheets("Bestellvorgang").Range("H95") = s80Count2
+    twkb.Worksheets("Bestellvorgang").Range("H96") = s85Count1
+    twkb.Worksheets("Bestellvorgang").Range("H97") = s85Count2
+    twkb.Worksheets("Bestellvorgang").Range("H98") = s90Count1
+    twkb.Worksheets("Bestellvorgang").Range("H99") = s90Count2
+    twkb.Worksheets("Bestellvorgang").Range("H100") = s95Count1
+    twkb.Worksheets("Bestellvorgang").Range("H101") = s95Count2
+    twkb.Worksheets("Bestellvorgang").Range("H102") = s100Count1
+    twkb.Worksheets("Bestellvorgang").Range("H103") = s100Count2
+    twkb.Worksheets("Bestellvorgang").Range("H104") = s105Count1
+    twkb.Worksheets("Bestellvorgang").Range("H105") = s105Count2
+    
+    
+End Sub
