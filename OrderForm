@@ -1,0 +1,131 @@
+Sub SchaltflÃ¤che121_Klicken()
+    Dim twkb As Workbook
+    Dim count As Integer
+    Dim nameContainer()
+    Dim countContainer()
+    Dim multiplier As Integer
+    Dim amount As Integer
+    Set twkb = ThisWorkbook
+    count = 36
+    multiplier = 0
+    amount = 0
+    nameContainer() = Array("A1", "A1ZD", "A2", "A2ZD", "A3", "A3ZD", "A4", "A4ZD", "A5", "A5ZD", "A6", "A6ZD", "A7", "A7ZD", "A8", "A8ZD", "R50", "R60", "R70", "R80", "R90", "R100", "R105", "S30", "S40", "S50", "S60", "S70", "S80", "S90", "S100")
+    countContainer() = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    
+    
+    While twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value <> ""
+        If twkb.Worksheets("Bestellung").Range("F" + CStr(count)).Value <> "" Then
+            multiplier = twkb.Worksheets("Bestellung").Range("F" + CStr(count)).Value
+        Else
+            multiplier = 1
+        End If
+        
+        If twkb.Worksheets("Bestellung").Range("D" + CStr(count)).Value <> "" Then
+            If twkb.Worksheets("Bestellung").Range("E" + CStr(count)).Value <> "" Then
+                amount = twkb.Worksheets("Bestellung").Range("E" + CStr(count)).Value - twkb.Worksheets("Bestellung").Range("D" + CStr(count)).Value + 1
+            Else
+                amount = 1
+            End If
+        Else
+            amount = 1
+        End If
+        
+        
+        
+        If twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "A1" Then
+            If twkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value = "ZD" Or twkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value = "DB" Then
+                countContainer(1) = countContainer(1) + amount * multiplier
+            Else
+                countContainer(0) = countContainer(0) + amount * multiplier
+            End If
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "A2" Then
+            If twkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value = "ZD" Or twkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value = "DB" Then
+                countContainer(3) = countContainer(3) + amount * multiplier
+            Else
+                countContainer(2) = countContainer(2) + amount * multiplier
+            End If
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "A3" Then
+            If twkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value = "ZD" Or twkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value = "DB" Then
+                countContainer(5) = countContainer(5) + amount * multiplier
+            Else
+                countContainer(4) = countContainer(4) + amount * multiplier
+            End If
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "A4" Then
+            If twkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value = "ZD" Or twkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value = "DB" Then
+                countContainer(7) = countContainer(7) + amount * multiplier
+            Else
+                countContainer(6) = countContainer(6) + amount * multiplier
+            End If
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "A5" Then
+            If twkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value = "ZD" Or twkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value = "DB" Then
+                countContainer(9) = countContainer(9) + amount * multiplier
+            Else
+                countContainer(8) = countContainer(8) + amount * multiplier
+            End If
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "A6" Then
+            If twkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value = "ZD" Or twkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value = "DB" Then
+                countContainer(11) = countContainer(11) + amount * multiplier
+            Else
+                countContainer(10) = countContainer(10) + amount * multiplier
+            End If
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "A7" Then
+            If twkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value = "ZD" Or twkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value = "DB" Then
+                countContainer(13) = countContainer(13) + amount * multiplier
+            Else
+                countContainer(12) = countContainer(12) + amount * multiplier
+            End If
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "A8" Then
+            If twkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value = "ZD" Or twkb.Worksheets("Bestellung").Range("B" + CStr(count)).Value = "DB" Then
+                countContainer(15) = countContainer(15) + amount * multiplier
+            Else
+                countContainer(14) = countContainer(14) + amount * multiplier
+            End If
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "R50" Then
+            countContainer(16) = countContainer(16) + amount * multiplier
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "R60" Then
+            countContainer(17) = countContainer(17) + amount * multiplier
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "R70" Then
+            countContainer(18) = countContainer(18) + amount * multiplier
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "R80" Then
+            countContainer(19) = countContainer(19) + amount * multiplier
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "R90" Then
+            countContainer(20) = countContainer(20) + amount * multiplier
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "R100" Then
+            countContainer(21) = countContainer(21) + amount * multiplier
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "R105" Then
+            countContainer(22) = countContainer(22) + amount * multiplier
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "S30" Then
+            countContainer(23) = countContainer(23) + amount * multiplier
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "S40" Then
+            countContainer(24) = countContainer(24) + amount * multiplier
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "S50" Then
+            countContainer(25) = countContainer(25) + amount * multiplier
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "S60" Then
+            countContainer(26) = countContainer(26) + amount * multiplier
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "S70" Then
+            countContainer(27) = countContainer(27) + amount * multiplier
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "S80" Then
+            countContainer(28) = countContainer(28) + amount * multiplier
+        ElseIf twkb.Worksheets("Bestellung").Range("A" + CStr(count)).Value = "S90" Then
+            countContainer(29) = countContainer(29) + amount * multiplier
+        Else
+            countContainer(30) = countContainer(30) + amount * multiplier
+        End If
+    
+    count = count + 1
+    Wend
+    
+    Dim Msg, Style, Title, Help, Ctxt, Response, MyString, a
+    For a = 0 To 30
+        MyString = MyString + nameContainer(a) + vbTab + vbTab + vbTab + CStr(countContainer(a)) + vbNewLine
+    Next
+    Msg = MyString
+    Style = vbInformation
+    Title = "Schilderanzahl"
+    Help = "DEMO.HLP"
+    Ctxt = 1000
+        
+Response = MsgBox(Msg, Style, Title, Help, Ctxt)
+    
+End Sub
+
